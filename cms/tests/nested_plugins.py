@@ -465,7 +465,7 @@ class NestedPluginsTestCase(PluginsTestBaseCase, UnittestCompatMixin):
             msg = u"parent plugin right is not updated, child not inserted correctly"
             self.assertTrue(text_plugin.position == link_plugin.position, msg=msg)
             msg = u"link has no parent"
-            self.assertFalse(link_plugin.parent == None, msg=msg)
+            self.assertFalse(link_plugin.parent is None, msg=msg)
             msg = u"parent plugin path is not updated, child not inserted correctly"
             self.assertTrue(text_plugin.path == link_plugin.path[:4], msg=msg)
             msg = u"child level is not bigger than parent level"
