@@ -11,37 +11,6 @@ from django.core.urlresolvers import NoReverseMatch, reverse, resolve
 from django.utils import six
 
 
-def mark_descendants(nodes):
-    for node in nodes:
-        node.descendant = True
-        mark_descendants(node.children)
-
-
-def cut_levels(nodes, level):
-    """
-    For cutting the nav_extender levels if you have a from_level in the navigation.
-    """
-    if not nodes:
-        return []
-    if nodes[0].level == level:
-        return nodes
-    return [subnode for node in nodes
-            for subnode in cut_levels(node.children, level)]
-
-
-def find_selected(nodes):
-    """
-    Finds a selected nav_extender node 
-    """
-    for node in nodes:
-        if hasattr(node, "selected"):
-            return node
-        if hasattr(node, "ancestor"):
-            result = find_selected(node.children)
-            if result is not None:
-                return result
-
-
 def set_language_changer(request, func):
     """
     

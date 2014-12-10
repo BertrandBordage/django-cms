@@ -1,9 +1,8 @@
 from django.http import HttpResponse
 
 from cms.test_utils.testcases import CMSTestCase
-from cms.test_utils.util.mock import AttributeObject
 from menus.templatetags.menu_tags import PageLanguageUrl
-from menus.utils import find_selected, language_changer_decorator
+from menus.utils import language_changer_decorator
 
 
 class DumbPageLanguageUrl(PageLanguageUrl):
@@ -57,13 +56,3 @@ class MenuUtilsTests(CMSTestCase):
         output = tag.get_context(fake_context, 'ja')
         url = output['content']
         self.assertEqual(url, '/ja/dummy/')
-
-    def test_find_selected(self):
-        subchild = AttributeObject()
-        firstchild = AttributeObject(ancestor=True, children=[subchild])
-        selectedchild = AttributeObject(selected=True)
-        secondchild = AttributeObject(ancestor=True, children=[selectedchild])
-        root = AttributeObject(ancestor=True, children=[firstchild, secondchild])
-        nodes = [root]
-        selected = find_selected(nodes)
-        self.assertEqual(selected, selectedchild)

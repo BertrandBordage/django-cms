@@ -10,7 +10,6 @@ from django.utils.translation import activate
 from menus.base import NavigationNode
 from menus.menu_pool import menu_pool, _build_nodes_inner_for_one_menu
 from menus.models import CacheKey
-from menus.utils import mark_descendants, find_selected, cut_levels
 
 from cms.api import create_page
 from cms.menu import CMSMenu, get_visible_pages
@@ -582,24 +581,6 @@ class MenuTests(BaseMenuTest):
         self.assertEqual(node3.children, [])
         self.assertEqual(node4.children, [node3])
         self.assertEqual(node5.children, [node4])
-
-    def test_utils_mark_descendants(self):
-        tree_nodes, flat_nodes = self._get_nodes()
-        mark_descendants(tree_nodes)
-        for node in flat_nodes:
-            self.assertTrue(node.descendant, node)
-
-    def test_utils_find_selected(self):
-        tree_nodes, flat_nodes = self._get_nodes()
-        node = flat_nodes[0]
-        selected = find_selected(tree_nodes)
-        self.assertEqual(selected, node)
-        selected = find_selected([])
-        self.assertEqual(selected, None)
-
-    def test_utils_cut_levels(self):
-        tree_nodes, flat_nodes = self._get_nodes()
-        self.assertEqual(cut_levels(tree_nodes, 1), [flat_nodes[1]])
 
     def test_empty_menu(self):
         context = self.get_context()
