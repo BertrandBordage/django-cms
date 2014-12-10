@@ -28,7 +28,7 @@ def get_template_from_request(request, obj=None, no_current_page=False):
         current_page = request.current_page
         if hasattr(current_page, "get_template"):
             template = current_page.get_template()
-    if template is not None and template in dict(get_cms_setting('TEMPLATES')).keys():
+    if template is not None and template in dict(get_cms_setting('TEMPLATES')):
         if template == constants.TEMPLATE_INHERITANCE_MAGIC and obj:
             # Happens on admin's request when changing the template for a page
             # to "inherit".

@@ -282,7 +282,7 @@ class PageAdmin(PlaceholderAdminMixin, ModelAdmin):
         # get_form method operates by overriding initial fields value which
         # may persist across invocation. Code below deepcopies fields definition
         # to avoid leaks
-        for field in form.base_fields.keys():
+        for field in form.base_fields:
             form.base_fields[field] = copy.deepcopy(form.base_fields[field])
 
         if 'language' in form.base_fields:
@@ -693,7 +693,7 @@ class PageAdmin(PlaceholderAdminMixin, ModelAdmin):
             # parameter via the query string. If wacky parameters were given and
             # the 'invalid=1' parameter was already in the query string, something
             # is screwed up with the database, so display an error page.
-            if ERROR_FLAG in request.GET.keys():
+            if ERROR_FLAG in request.GET:
                 return render_to_response('admin/invalid_setup.html', {'title': _('Database error')})
             return HttpResponseRedirect(request.path_info + '?' + ERROR_FLAG + '=1')
         cl.set_items(request)

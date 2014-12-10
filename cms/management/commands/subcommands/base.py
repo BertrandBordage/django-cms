@@ -17,7 +17,7 @@ class SubcommandsCommand(BaseCommand):
         stderr = getattr(self, 'stderr', sys.stderr)
         stdout = getattr(self, 'stdout', sys.stdout)
         if len(args) > 0:
-            if args[0] in self.subcommands.keys():
+            if args[0] in self.subcommands:
                 handle_command = self.subcommands.get(args[0])()
                 handle_command.stdout = stdout
                 handle_command.stderr = stderr
@@ -25,12 +25,12 @@ class SubcommandsCommand(BaseCommand):
             else:
                 stderr.write("%r is not a valid subcommand for %r\n" % (args[0], self.command_name))
                 stderr.write("Available subcommands are:\n")
-                for subcommand in sorted(self.subcommands.keys()):
+                for subcommand in sorted(self.subcommands):
                     stderr.write("  %r\n" % subcommand)
                 raise CommandError('Invalid subcommand %r for %r' % (args[0], self.command_name))
         else:
             stderr.write("%r must be called with at least one argument, it's subcommand.\n" % self.command_name)
             stderr.write("Available subcommands are:\n")
-            for subcommand in sorted(self.subcommands.keys()):
+            for subcommand in sorted(self.subcommands):
                 stderr.write("  %r\n" % subcommand)
             raise CommandError('No subcommand given for %r' % self.command_name)

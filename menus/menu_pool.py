@@ -99,7 +99,7 @@ class MenuPool(object):
     def register_menu(self, menu):
         from menus.base import Menu
         assert issubclass(menu, Menu)
-        if menu.__name__ in self.menus.keys():
+        if menu.__name__ in self.menus:
             raise NamespaceAlreadyRegistered(
                 "[%s] a menu with this name is already registered" % menu.__name__)
         self.menus[menu.__name__] = menu()

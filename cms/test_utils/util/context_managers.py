@@ -159,7 +159,7 @@ class ChangeModel(object):
         self.instance.save()
         
     def __exit__(self, exc, value, tb):
-        for key in self.overrides.keys():
+        for key in self.overrides:
             old_value = self.old[key]
             if old_value is NULL:
                 delattr(self.instance, key)

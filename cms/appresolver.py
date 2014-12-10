@@ -218,9 +218,9 @@ def get_app_patterns():
         included.append(mix_id)
         # Build the app patterns to be included in the cms urlconfs
     app_patterns = []
-    for page_id in hooked_applications.keys():
+    for page_id in hooked_applications:
         resolver = None
-        for lang in hooked_applications[page_id].keys():
+        for lang in hooked_applications[page_id]:
             (app_ns, inst_ns), current_patterns, app = hooked_applications[page_id][lang]
             if not resolver:
                 resolver = AppRegexURLResolver(r'', 'app_resolver', app_name=app_ns, namespace=inst_ns)

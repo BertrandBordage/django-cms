@@ -36,7 +36,7 @@ class Command(SubcommandsCommand):
     @property
     def help(self):
         lines = ['django CMS command line interface.', '', 'Available subcommands:']
-        for subcommand in sorted(self.subcommands.keys()):
+        for subcommand in sorted(self.subcommands):
             lines.append('  %s' % subcommand)
         lines.append('')
         lines.append('Use `manage.py cms <subcommand> --help` for help about subcommands')
