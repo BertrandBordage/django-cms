@@ -54,12 +54,18 @@ class NavigationNode(object):
         nodes = []
         for node in self.children:
             nodes.append(node)
-            nodes += node.get_descendants()
+            nodes.extend(node.get_descendants())
         return nodes
 
     def get_ancestors(self):
+        """
+        Returns the ancestors of the node.
+
+        This does not include the current node.
+        """
+        parent = self
         nodes = []
-        if getattr(self, 'parent', None):
-            nodes.append(self.parent)
-            nodes += self.parent.get_ancestors()
+        while parent.parent is not None:
+            parent = parent.parent
+            nodes.append(parent)
         return nodes

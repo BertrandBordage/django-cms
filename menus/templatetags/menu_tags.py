@@ -28,23 +28,23 @@ def cut_after(node, levels, removed):
     if levels == 0:
         removed.extend(node.children)
         node.children = []
-    else:
-        removed_local = []
-        for child in node.children:
-            if child.visible:
-                cut_after(child, levels - 1, removed)
-            else:
-                removed_local.append(child)
-        for removed_child in removed_local:
-            node.children.remove(removed_child)
-        removed.extend(removed_local)
+        return
+
+    removed_local = []
+    for child in node.children:
+        if child.visible:
+            cut_after(child, levels - 1, removed)
+        else:
+            removed_local.append(child)
+    for removed_child in removed_local:
+        node.children.remove(removed_child)
+    removed.extend(removed_local)
 
 
 def remove(node, removed):
     removed.append(node)
-    if node.parent:
-        if node in node.parent.children:
-            node.parent.children.remove(node)
+    if node.parent is not None and node in node.parent.children:
+        node.parent.children.remove(node)
 
 
 def cut_levels(nodes, from_level, to_level, extra_inactive, extra_active):
@@ -63,11 +63,11 @@ def cut_levels(nodes, from_level, to_level, extra_inactive, extra_active):
             # turn nodes that are on from_level into root nodes
             final.append(node)
             node.parent = None
-        if not node.ancestor and not node.selected and not node.descendant:
+        if not (node.ancestor or node.selected or node.descendant):
             # cut inactive nodes to extra_inactive, but not of descendants of 
             # the selected node
             cut_after(node, extra_inactive, removed)
-        if node.level > to_level and node.parent:
+        if node.level > to_level and node.parent is not None:
             # remove nodes that are too deep, but not nodes that are on 
             # from_level (local root nodes)
             remove(node, removed)
@@ -75,12 +75,11 @@ def cut_levels(nodes, from_level, to_level, extra_inactive, extra_active):
             selected = node
         if not node.visible:
             remove(node, removed)
-    if selected:
+    if selected is not None:
         cut_after(selected, extra_active, removed)
-    if removed:
-        for node in removed:
-            if node in final:
-                final.remove(node)
+    for node in removed:
+        if node in final:
+            final.remove(node)
     return final
 
 
@@ -210,19 +209,21 @@ class ShowSubMenu(InclusionTag):
         children = []
         # adjust root_level so we cut before the specified level, not after
         include_root = False
-        if root_level is not None and root_level > 0:
-            root_level -= 1
-        elif root_level is not None and root_level == 0:
-            include_root = True
+        if root_level is not None:
+            if root_level > 0:
+                root_level -= 1
+            elif root_level == 0:
+                include_root = True
         for node in nodes:
             if root_level is None:
                 if node.selected:
                     # if no root_level specified, set it to the selected nodes level
                     root_level = node.level
-                    # is this the ancestor of current selected node at the root level?
-            is_root_ancestor = (node.ancestor and node.level == root_level)
+            is_root = node.level == root_level
+            # is this the ancestor of current selected node at the root level?
+            is_root_ancestor = (node.ancestor and is_root)
             # is a node selected on the root_level specified
-            root_selected = (node.selected and node.level == root_level)
+            root_selected = (node.selected and is_root)
             if is_root_ancestor or root_selected:
                 cut_after(node, levels, [])
                 children = node.children
@@ -232,9 +233,8 @@ class ShowSubMenu(InclusionTag):
                         # if root_level was 0 we need to give the menu the entire tree
                     # not just the children
                 if include_root:
-                    children = menu_pool.apply_modifiers([node], request, post_cut=True)
-                else:
-                    children = menu_pool.apply_modifiers(children, request, post_cut=True)
+                    children = [node]
+                children = menu_pool.apply_modifiers(children, request, post_cut=True)
         context.update({
             'children': children,
             'template': template,
@@ -288,9 +288,9 @@ class ShowBreadcrumb(InclusionTag):
                 selected = node
             if node.get_absolute_url() == unquote(reverse("pages-root")):
                 home = node
-        if selected and selected != home:
+        if selected is not None and selected != home:
             node = selected
-            while node:
+            while node is not None:
                 if node.visible or not only_visible:
                     ancestors.append(node)
                 node = node.parent
@@ -348,27 +348,25 @@ class LanguageChooser(InclusionTag):
     )
 
     def get_context(self, context, template, i18n_mode):
+        if 'request' not in context:
+            # If there's an exception (500), default context_processors may
+            # not be called.
+            return {'template': 'cms/content.html'}
+
         if template in MARKERS:
             _tmp = template
-            if i18n_mode not in MARKERS:
-                template = i18n_mode
-            else:
-                template = NOT_PROVIDED
+            template = NOT_PROVIDED if i18n_mode in MARKERS else i18n_mode
             i18n_mode = _tmp
         if template is NOT_PROVIDED:
             template = "menu/language_chooser.html"
-        if not i18n_mode in MARKERS:
+        if i18n_mode not in MARKERS:
             i18n_mode = 'raw'
-        if 'request' not in context:
-            # If there's an exception (500), default context_processors may not be called.
-            return {'template': 'cms/content.html'}
         marker = MARKERS[i18n_mode]
         current_lang = get_language()
         site = Site.objects.get_current()
-        languages = []
-        for lang in get_language_objects(site.pk):
-            if lang.get('public', True):
-                languages.append((lang['code'], marker(lang['name'], lang['code'])))
+        languages = [(lang['code'], marker(lang['name'], lang['code']))
+                     for lang in get_language_objects(site.pk)
+                     if lang.get('public', True)]
         context.update({
             'languages': languages,
             'current_language': current_lang,

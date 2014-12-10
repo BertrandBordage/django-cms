@@ -21,13 +21,12 @@ def cut_levels(nodes, level):
     """
     For cutting the nav_extender levels if you have a from_level in the navigation.
     """
-    result = []
-    if nodes:
-        if nodes[0].level == level:
-            return nodes
-    for node in nodes:
-        result += cut_levels(node.children, level)
-    return result
+    if not nodes:
+        return []
+    if nodes[0].level == level:
+        return nodes
+    return [subnode for node in nodes
+            for subnode in cut_levels(node.children, level)]
 
 
 def find_selected(nodes):
@@ -37,9 +36,9 @@ def find_selected(nodes):
     for node in nodes:
         if hasattr(node, "selected"):
             return node
-        elif hasattr(node, "ancestor"):
+        if hasattr(node, "ancestor"):
             result = find_selected(node.children)
-            if result:
+            if result is not None:
                 return result
 
 
@@ -87,32 +86,28 @@ class DefaultLanguageChanger(object):
     @property
     def app_path(self):
         if self._app_path is None:
-            if settings.USE_I18N:
-                page_path = self.get_page_path(get_language_from_request(self.request))
-            else:
-                page_path = self.get_page_path(settings.LANGUAGE_CODE)
+            self._app_path = self.request.path_info
+
+            language_code = (get_language_from_request(self.request)
+                             if settings.USE_I18N else settings.LANGUAGE_CODE)
+            page_path = self.get_page_path(language_code)
             if page_path:
-                self._app_path = self.request.path_info[len(page_path):]
-            else:
-                self._app_path = self.request.path_info
+                self._app_path = self.app_path[len(page_path):]
         return self._app_path
 
     def get_page_path(self, lang):
         page = getattr(self.request, 'current_page', None)
-        if page:
+        if page is not None:
             with force_language(lang):
                 try:
                     return page.get_absolute_url(language=lang, fallback=False)
                 except (Title.DoesNotExist, NoReverseMatch):
                     if hide_untranslated(lang) and settings.USE_I18N:
                         return '/%s/' % lang
-                    else:
-                        return page.get_absolute_url(language=lang, fallback=True)
-        else:
-            if settings.USE_I18N:
-                return '/%s/' % lang
-            else:
-                return "/"
+                    return page.get_absolute_url(language=lang, fallback=True)
+        if settings.USE_I18N:
+            return '/%s/' % lang
+        return "/"
 
     def __call__(self, lang):
         page_language = get_language_from_request(self.request)
@@ -127,19 +122,16 @@ class DefaultLanguageChanger(object):
                     return self.request.toolbar.obj.get_absolute_url()
                 except:
                     pass
-        elif view and not view.url_name in ('pages-details-by-slug', 'pages-root'):
+        elif view and view.url_name not in ('pages-details-by-slug', 'pages-root'):
             view_name = view.url_name
             if view.namespace:
                 view_name = "%s:%s" % (view.namespace, view_name)
-            url = None
             with force_language(lang):
                 with static_stringifier(view):  # This is a fix for Django < 1.7
                     try:
-                        url = reverse(view_name, args=view.args, kwargs=view.kwargs, current_app=view.app_name)
+                        return reverse(view_name, args=view.args, kwargs=view.kwargs, current_app=view.app_name)
                     except NoReverseMatch:
                         pass
-            if url:
-                return url
         return '%s%s' % (self.get_page_path(lang), self.app_path)
 
 

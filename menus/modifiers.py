@@ -20,8 +20,8 @@ class Marker(Modifier):
                 node.descendant = False
             if not hasattr(node, "ancestor"):
                 node.ancestor = False
-            if not node.parent:
-                if selected and not selected.parent:
+            if node.parent is None:
+                if selected is not None and selected.parent is None:
                     node.sibling = True
                 root_nodes.append(node)
             if node.selected: 
@@ -40,10 +40,7 @@ class Marker(Modifier):
                 if node.children:                    
                     self.mark_descendants(node.children)
                 selected = node
-            if node.children:
-                node.is_leaf_node = False
-            else:
-                node.is_leaf_node = True
+            node.is_leaf_node = not node.children
         return nodes
                 
     def mark_descendants(self, nodes):
@@ -64,7 +61,7 @@ class Level(Modifier):
             return nodes
         for node in nodes:
             
-            if not node.parent:
+            if node.parent is None:
                 if post_cut:
                     node.menu_level = 0
                 else:
@@ -93,9 +90,9 @@ class AuthVisibility(Modifier):
             return nodes
         final = []
         for node in nodes:
-            if (node.attr.get('visible_for_authenticated', True) and \
+            if (node.attr.get('visible_for_authenticated', True) and
                  request.user.is_authenticated()) or \
-                (node.attr.get('visible_for_anonymous', True) and \
+                (node.attr.get('visible_for_anonymous', True) and
                  not request.user.is_authenticated()):
                 final.append(node)
             else:

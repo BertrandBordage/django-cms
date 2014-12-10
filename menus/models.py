@@ -4,18 +4,15 @@ from django.db import models
 
 class CacheKeyManager(models.Manager):
     def get_keys(self, site_id=None, language=None):
-        ret = self.none()
         if not site_id and not language:
             # Both site and language are None - return everything  
-            ret = self.all()
-        elif not site_id:
-            ret = self.filter(language=language)
-        elif not language:
-            ret = self.filter(site=site_id)
-        else:
-            # Filter by site_id *and* by language.
-            ret = self.filter(site=site_id).filter(language=language)
-        return ret
+            return self.all()
+        if not site_id:
+            return self.filter(language=language)
+        if not language:
+            return self.filter(site=site_id)
+        # Filter by site_id *and* by language.
+        return self.filter(site=site_id).filter(language=language)
 
     def get_or_create(self, **kwargs):
         try:

@@ -107,7 +107,7 @@ class MenuPool(object):
     def register_modifier(self, modifier_class):
         from menus.base import Modifier
         assert issubclass(modifier_class, Modifier)
-        if not modifier_class in self.modifiers:
+        if modifier_class not in self.modifiers:
             self.modifiers.append(modifier_class)
 
     def _build_nodes(self, request, site_id):
@@ -134,7 +134,7 @@ class MenuPool(object):
         if request.user.is_authenticated():
             key += "_%s_user" % request.user.pk
         cached_nodes = cache.get(key, None)
-        if cached_nodes:
+        if cached_nodes is not None:
             return cached_nodes
         
         final_nodes = []
@@ -150,7 +150,8 @@ class MenuPool(object):
                     messages.error(request, _('Menu %s cannot be loaded. Please, make sure all its urls exist and can be resolved.') % menu_class_name)
                     logger.error("Menu %s could not be loaded." % menu_class_name, exc_info=True)
             # nodes is a list of navigation nodes (page tree in cms + others)
-            final_nodes += _build_nodes_inner_for_one_menu(nodes, menu_class_name)
+            final_nodes.extend(
+                _build_nodes_inner_for_one_menu(nodes, menu_class_name))
         cache.set(key, final_nodes, get_cms_setting('CACHE_DURATIONS')['menus'])
         # We need to have a list of the cache keys for languages and sites that
         # span several processes - so we follow the Django way and share through 
@@ -174,8 +175,7 @@ class MenuPool(object):
             site_id = Site.objects.get_current().pk
         nodes = self._build_nodes(request, site_id)
         nodes = copy.deepcopy(nodes)
-        nodes = self.apply_modifiers(nodes, request, namespace, root_id, post_cut=False, breadcrumb=breadcrumb)
-        return nodes 
+        return self.apply_modifiers(nodes, request, namespace, root_id, post_cut=False, breadcrumb=breadcrumb)
 
     def _mark_selected(self, request, nodes):
         sel = None
@@ -184,31 +184,21 @@ class MenuPool(object):
             node.ancestor = False
             node.descendant = False
             node.selected = False
-            if node.get_absolute_url() == request.path[:len(node.get_absolute_url())]:
-                if sel:
-                    if len(node.get_absolute_url()) > len(sel.get_absolute_url()):
-                        sel = node
-                else:
-                    sel = node
-            else:
-                node.selected = False
-        if sel:
+            url = node.get_absolute_url()
+            if request.path.startswith(url) \
+                and (sel is None
+                     or len(url) > len(sel.get_absolute_url())):
+                sel = node
+        if sel is not None:
             sel.selected = True
         return nodes
 
     def get_menus_by_attribute(self, name, value):
         self.discover_menus()
-        found = []
-        for menu in self.menus.items():
-            if hasattr(menu[1], name) and getattr(menu[1], name, None) == value:
-                found.append((menu[0], menu[1].name))
-        return found
+        return [(k, v.name) for k, v in self.menus.items()
+                if hasattr(v, name) and getattr(v, name, None) == value]
 
     def get_nodes_by_attribute(self, nodes, name, value):
-        found = []
-        for node in nodes:
-            if node.attr.get(name, None) == value:
-                found.append(node)
-        return found
+        return [node for node in nodes if node.attr.get(name, None) == value]
 
 menu_pool = MenuPool()
