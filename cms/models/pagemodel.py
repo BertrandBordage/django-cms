@@ -614,8 +614,7 @@ class Page(with_metaclass(PageMetaClass, MP_Node)):
 
         for page in publish_set:
             if page.pk in publish_ids and publish_ids[page.pk]:
-                page.title_cache = {}
-                page.title_cache[language] = publish_ids[page.pk]
+                page.title_cache = {language: publish_ids[page.pk]}
             if page.publisher_public_id:
                 if not page.publisher_public.parent_id:
                     page._publisher_save_public(page.publisher_public)
@@ -623,8 +622,8 @@ class Page(with_metaclass(PageMetaClass, MP_Node)):
                 if page.publisher_public.parent_id and not page.publisher_public.parent:
                     page.publisher_public.parent = Page.objects.get(pk=page.publisher_public.parent_id)
                 if page.publisher_public.parent_id in publish_ids:
-                    page.publisher_public.parent.title_cache = {}
-                    page.publisher_public.parent.title_cache[language] = publish_ids[page.publisher_public.parent_id]
+                    page.publisher_public.parent.title_cache = {
+                        language: publish_ids[page.publisher_public.parent_id]}
                 if page.publisher_public.parent.is_published(language):
                     if page.publisher_public_id in publish_ids:
                         public_title = publish_ids[page.publisher_public_id]

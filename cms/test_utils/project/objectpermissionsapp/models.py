@@ -19,11 +19,8 @@ class UserObjectPermissionManager(models.Manager):
         ctype = ContentType.objects.get_for_model(obj)
         permission = Permission.objects.get(content_type=ctype, codename=perm)
 
-        kwargs = {'permission': permission, 'user': user}
-        kwargs['content_type'] = ctype
-        kwargs['object_pk'] = obj.pk
-        obj_perm, created = self.get_or_create(**kwargs)  # @UnusedVariable
-        return obj_perm
+        return self.get_or_create(permission=permission, user=user,
+                                  content_type=ctype, object_pk=obj.pk)
 
     def remove_perm(self, perm, user, obj):
         """
@@ -31,13 +28,10 @@ class UserObjectPermissionManager(models.Manager):
         """
         if getattr(obj, 'pk', None) is None:
             raise Exception("Object %s needs to be persisted first" % obj)
-        filters = {
-            'permission__codename': perm,
-            'permission__content_type': ContentType.objects.get_for_model(obj),
-            'user': user,
-        }
-        filters['object_pk'] = obj.pk
-        self.filter(**filters).delete()
+        self.filter(
+            permission__codename=perm,
+            permission__content_type=ContentType.objects.get_for_model(obj),
+            user=user, object_pk=obj.pk).delete()
 
 
 class UserObjectPermission(models.Model):

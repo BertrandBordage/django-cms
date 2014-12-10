@@ -23,8 +23,7 @@ class Mock_PageSelectFormField(PageSelectFormField):
         # That's to have a proper mock object, without having to resort
         # to dirtier tricks. We want to test *just* compress here.
         self.required = required
-        self.error_messages = {}
-        self.error_messages['invalid_page'] = 'Invalid_page'
+        self.error_messages = {'invalid_page': 'Invalid_page'}
 
 
 class FormsTestCase(CMSTestCase):

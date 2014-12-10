@@ -29,8 +29,7 @@ def plugin_report():
     plugin_types.sort()
 
     for plugin_type in plugin_types: 
-        plugin = {}
-        plugin["type"] = plugin_type
+        plugin = {'type': plugin_type}
         try:
             # get all plugins of this type                 
             plugins = CMSPlugin.objects.filter(plugin_type=plugin_type)
