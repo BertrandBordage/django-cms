@@ -64,8 +64,7 @@ class AppRegexURLResolver(RegexURLResolver):
         language = get_language()
         if language in self.url_patterns_dict:
             return self.url_patterns_dict[language]
-        else:
-            return []
+        return []
 
     def resolve_page_id(self, path):
         """Resolves requested path similar way how resolve does, but instead

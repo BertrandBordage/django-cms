@@ -22,8 +22,7 @@ def _base_detail(request, instance, template_name='detail.html',
     if template_string:
         template = Template(template_string)
         return HttpResponse(template.render(context))
-    else:
-        return render_to_response(template_name, context)
+    return render_to_response(template_name, context)
 
 
 def list_view_multi(request):

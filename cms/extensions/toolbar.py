@@ -72,8 +72,6 @@ class ExtensionToolbar(CMSToolbar):
         current_page_menu = self.toolbar.get_or_create_menu('page')
         if can_change and has_global_current_page_change_permission:
             return current_page_menu
-        else:
-            return
 
     def _get_page(self):
         """

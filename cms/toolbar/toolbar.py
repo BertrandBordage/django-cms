@@ -120,7 +120,6 @@ class CMSToolbar(ToolbarAPIMixin):
         self.populate()
         if key in self.menus:
             return self.menus[key]
-        return None
 
     def get_or_create_menu(self, key, verbose_name=None, side=LEFT, position=None):
         self.populate()
@@ -206,8 +205,7 @@ class CMSToolbar(ToolbarAPIMixin):
     def _item_position(self, item):
         if item.right:
             return self.right_items.index(item)
-        else:
-            return self.left_items.index(item)
+        return self.left_items.index(item)
 
     def get_clipboard_plugins(self):
         self.populate()
@@ -253,8 +251,7 @@ class CMSToolbar(ToolbarAPIMixin):
 
         if self.request.method != 'POST':
             return self._request_hook_get()
-        else:
-            return self._request_hook_post()
+        return self._request_hook_post()
 
     def _request_hook_get(self):
         if 'cms-toolbar-logout' in self.request.GET:
@@ -269,11 +266,9 @@ class CMSToolbar(ToolbarAPIMixin):
                 login(self.request, self.login_form.user_cache)
                 if REDIRECT_FIELD_NAME in self.request.GET:
                     return HttpResponseRedirect(self.request.GET[REDIRECT_FIELD_NAME])
-                else:
-                    return HttpResponseRedirect(self.request.path_info)
-            else:
-                if REDIRECT_FIELD_NAME in self.request.GET:
-                    return HttpResponseRedirect(self.request.GET[REDIRECT_FIELD_NAME]+"?cms-toolbar-login-error=1")
+                return HttpResponseRedirect(self.request.path_info)
+            if REDIRECT_FIELD_NAME in self.request.GET:
+                return HttpResponseRedirect(self.request.GET[REDIRECT_FIELD_NAME]+"?cms-toolbar-login-error=1")
 
     def _call_toolbar(self, func_name):
         with force_language(self.toolbar_language):

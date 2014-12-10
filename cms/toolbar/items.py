@@ -28,8 +28,7 @@ class ItemSearchResult(object):
 def may_be_lazy(thing):
     if isinstance(thing, Promise):
         return thing._proxy____args[0]
-    else:
-        return thing
+    return thing
 
 
 class ToolbarAPIMixin(six.with_metaclass(ABCMeta)):
@@ -93,7 +92,7 @@ class ToolbarAPIMixin(six.with_metaclass(ABCMeta)):
         try:
             return self.find_items(item_type, **attributes)[0]
         except IndexError:
-            return None
+            return
 
     #
     # This will only work if it is used to determine the insert position for

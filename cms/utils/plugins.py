@@ -176,9 +176,8 @@ def current_site(request):
             SITE_CACHE[site_pk] = site
             return site
         except Site.DoesNotExist:
-            return None
-    else:
-        return Site.objects.get_current()
+            return
+    return Site.objects.get_current()
 
 
 def get_plugins(request, placeholder, template, lang=None):

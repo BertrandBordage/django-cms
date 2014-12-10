@@ -185,10 +185,9 @@ class BasicToolbar(CMSToolbar):
             name = user.get_full_name()
             if name:
                 return name
-            elif DJANGO_1_4:
+            if DJANGO_1_4:
                 return user.username
-            else:
-                return user.get_username()
+            return user.get_username()
         except (AttributeError, NotImplementedError):
             return default
 

@@ -72,8 +72,7 @@ def get_available_slug(title, new_slug=None):
         else:
             slug += APPEND_TO_SLUG
         return get_available_slug(title, slug)
-    else:
-        return slug
+    return slug
 
 
 def check_title_slugs(page):

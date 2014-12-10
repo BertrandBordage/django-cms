@@ -63,8 +63,7 @@ class RequestFactory(object):
         # If there are parameters, add them
         if parsed[3]:
             return unquote(parsed[2] + ";" + parsed[3])
-        else:
-            return unquote(parsed[2])
+        return unquote(parsed[2])
 
     def get(self, path, data={}, **extra):
         "Construct a GET request"

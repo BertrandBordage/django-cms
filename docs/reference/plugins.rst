@@ -221,8 +221,7 @@ Example::
     def get_render_template(self, context, instance, placeholder):
         if instance.attr = 'one':
             return 'template1.html'
-        else:
-            return 'template2.html'
+        return 'template2.html'
 
 See also: `render_plugin`_ , `render_template`_
 

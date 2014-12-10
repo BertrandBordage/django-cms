@@ -4,8 +4,7 @@ def _skipIf(check, message=''):
     def _deco(meth):
         if check:
             return lambda *a, **kw: None
-        else:
-            return meth
+        return meth
     return _deco
 
 

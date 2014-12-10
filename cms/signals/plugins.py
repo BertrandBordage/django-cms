@@ -8,9 +8,8 @@ def get_placeholder(plugin):
         try:
             return plugin.placeholder
         except Placeholder.DoesNotExist:
-            return None
-    else:
-        return plugin.placeholder
+            return
+    return plugin.placeholder
 
 
 def set_dirty(plugin, delete_cache=True):

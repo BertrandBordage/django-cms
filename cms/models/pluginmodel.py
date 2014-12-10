@@ -219,8 +219,7 @@ class CMSPlugin(with_metaclass(PluginModelBase, MP_Node)):
         instance, plugin = self.get_plugin_instance()
         if instance:
             return plugin.icon_src(instance)
-        else:
-            return u''
+        return u''
 
     def get_instance_icon_alt(self):
         """
@@ -229,8 +228,7 @@ class CMSPlugin(with_metaclass(PluginModelBase, MP_Node)):
         instance, plugin = self.get_plugin_instance()
         if instance:
             return force_unicode(plugin.icon_alt(instance))
-        else:
-            return u''
+        return u''
 
     def save(self, no_signals=False, *args, **kwargs):
         if no_signals:  # ugly hack because of mptt

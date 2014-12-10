@@ -119,5 +119,4 @@ def render_admin_menu_item(request, page, template=None, language=None):
     # add mimetype to help out IE
     if DJANGO_1_4:
         return render_to_response(template, context, mimetype="text/html; charset=utf-8")
-    else:
-        return render_to_response(template, context, content_type="text/html; charset=utf-8")
+    return render_to_response(template, context, content_type="text/html; charset=utf-8")

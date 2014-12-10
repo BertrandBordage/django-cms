@@ -30,8 +30,7 @@ class ArticleDynamicTemplatePlugin(CMSPluginBase):
     def get_render_template(self, context, instance, placeholder):
         if instance.title == 'custom template':
             return "articles_custom.html"
-        else:
-            return "articles.html"
+        return "articles.html"
 
     def render(self, context, instance, placeholder):
         article_qs = Article.objects.filter(section__in=instance.sections.all())

@@ -239,8 +239,7 @@ class Placeholder(models.Model):
     def get_plugins(self, language=None):
         if language:
             return self.cmsplugin_set.filter(language=language).order_by('path')
-        else:
-            return self.cmsplugin_set.all().order_by('path')
+        return self.cmsplugin_set.all().order_by('path')
 
     def get_filled_languages(self):
         """

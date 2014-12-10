@@ -225,8 +225,7 @@ def get_unihandecode_host():
         return host
     if host.endswith('/'):
         return host
-    else:
-        return host + '/'
+    return host + '/'
 
 
 COMPLEX = {
@@ -246,8 +245,7 @@ COMPLEX = {
 def get_cms_setting(name):
     if name in COMPLEX:
         return COMPLEX[name]()
-    else:
-        return getattr(settings, 'CMS_%s' % name, DEFAULTS[name])
+    return getattr(settings, 'CMS_%s' % name, DEFAULTS[name])
 
 
 def get_site_id(site):

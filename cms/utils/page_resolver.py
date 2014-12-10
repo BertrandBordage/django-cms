@@ -37,8 +37,7 @@ def get_page_queryset_from_path(path, preview=False, draft=False, site=None):
             match = ADMIN_PAGE_RE.search(path)
             if match:
                 return Page.objects.filter(pk=match.group(1))
-            else:
-                return Page.objects.none()
+            return Page.objects.none()
 
     if not site:
         site = Site.objects.get_current()
@@ -71,7 +70,7 @@ def get_page_from_path(path, preview=False, draft=False):
     try:
         return get_page_queryset_from_path(path, preview, draft).get()
     except Page.DoesNotExist:
-        return None
+        return
 
 
 def get_page_from_request(request, use_path=None):

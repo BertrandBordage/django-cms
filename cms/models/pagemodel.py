@@ -735,8 +735,7 @@ class Page(with_metaclass(PageMetaClass, MP_Node)):
     def get_languages(self):
         if self.languages:
             return sorted(self.languages.split(','))
-        else:
-            return []
+        return []
 
     def get_descendants(self, include_self=False):
         """
@@ -745,8 +744,7 @@ class Page(with_metaclass(PageMetaClass, MP_Node)):
         """
         if include_self:
             return self.__class__.get_tree(self)
-        else:
-            return self.__class__.get_tree(self).exclude(pk=self.pk)
+        return self.__class__.get_tree(self).exclude(pk=self.pk)
 
     def get_cached_ancestors(self):
         if not hasattr(self, "ancestors_ascending"):

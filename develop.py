@@ -162,8 +162,7 @@ def test(test_labels, parallel=False, failfast=False):
         pool = multiprocessing.Pool()
         failures = sum(pool.map(_test_run_worker, worker_tests))
         return failures
-    else:
-        return _test_run_worker(test_labels, failfast)
+    return _test_run_worker(test_labels, failfast)
 
 
 def compilemessages():

@@ -20,8 +20,7 @@ def js(value):
 def bool(value):
     if value:
         return 'true'
-    else:
-        return 'false'
+    return 'false'
 
    
 class JavascriptString(Tag):

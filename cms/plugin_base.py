@@ -310,10 +310,8 @@ class CMSPluginBase(with_metaclass(CMSPluginBaseMetaclass, admin.ModelAdmin)):
         parent_classes = ph_conf.get(self.__class__.__name__, None)
         if parent_classes is not None:
             return parent_classes
-        elif self.parent_classes:
+        if self.parent_classes:
             return self.parent_classes
-        else:
-            return None
 
     def get_action_options(self):
         return self.action_options

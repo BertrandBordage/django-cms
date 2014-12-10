@@ -255,8 +255,7 @@ class PageAdmin(PlaceholderAdminMixin, ModelAdmin):
         if getattr(form, 'fieldsets', None) is None:
             fields = list(form.base_fields) + list(self.get_readonly_fields(request, obj))
             return [(None, {'fields': fields})]
-        else:
-            return form.fieldsets
+        return form.fieldsets
 
     def get_inline_classes(self, request, obj=None, **kwargs):
         if obj and 'permission' in request.path_info:
@@ -517,8 +516,7 @@ class PageAdmin(PlaceholderAdminMixin, ModelAdmin):
         if get_cms_setting('PERMISSION'):
             if obj:
                 return obj.has_change_permission(request)
-            else:
-                return permissions.has_page_change_permission(request)
+            return permissions.has_page_change_permission(request)
         return super(PageAdmin, self).has_change_permission(request, obj)
 
     def has_delete_permission(self, request, obj=None):
@@ -1485,8 +1483,7 @@ class PageAdmin(PlaceholderAdminMixin, ModelAdmin):
 
             return HttpResponse(json.dumps(results), content_type='application/json')
 
-        else:
-            return HttpResponseForbidden()
+        return HttpResponseForbidden()
 
     def add_plugin(self, *args, **kwargs):
         with create_revision():

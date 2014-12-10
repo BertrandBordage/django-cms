@@ -95,15 +95,11 @@ def _get_page_by_untyped_arg(page_lookup, request, site_id):
             if request and use_draft(request):
                 if page.publisher_is_draft:
                     return page
-                else:
-                    return page.publisher_draft
-            else:
-                if page.publisher_is_draft:
-                    return page.publisher_public
-                else:
-                    return page
-        else:
-            return get_page_queryset(request).get(**page_lookup)
+                return page.publisher_draft
+            if page.publisher_is_draft:
+                return page.publisher_public
+            return page
+        return get_page_queryset(request).get(**page_lookup)
     except Page.DoesNotExist:
         site = Site.objects.get_current()
         subject = _('Page not found on %(domain)s') % {'domain': site.domain}
@@ -115,7 +111,7 @@ def _get_page_by_untyped_arg(page_lookup, request, site_id):
         else:
             if settings.SEND_BROKEN_LINK_EMAILS:
                 mail_managers(subject, body, fail_silently=True)
-            return None
+
 
 class PageUrl(AsTag):
     name = 'page_url'
@@ -709,8 +705,7 @@ class CMSEditableObject(InclusionTag):
         if kwargs.get('varname'):
             context[kwargs['varname']] = output
             return ''
-        else:
-            return output
+        return output
 
     def _get_editable_context(self, context, instance, language, edit_fields,
                               view_method, view_url, querystring, editmode=True):
@@ -996,8 +991,7 @@ class CMSEditableObjectBlock(CMSEditableObject):
         if kwargs.get('varname'):
             context[kwargs['varname']] = output
             return ''
-        else:
-            return output
+        return output
 
     def get_context(self, context, instance, edit_fields, language,
                     view_url, view_method, varname, nodelist):
