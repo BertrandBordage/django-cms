@@ -123,7 +123,9 @@ class RenderingTestCase(SettingsOverrideTestCase):
         self.test_page3 = self.reload(p3.publisher_public)
         self.test_page4 = self.reload(p4.publisher_public)
 
-    def get_context(self, page, context_vars={}):
+    def get_context(self, page, context_vars=None):
+        if context_vars is None:
+            context_vars = {}
         request = self.get_request(page)
         return RequestContext(request, context_vars)
 
@@ -135,7 +137,9 @@ class RenderingTestCase(SettingsOverrideTestCase):
     def strip_rendered(self, content):
         return content.strip().replace(u"\n", u"")
 
-    def render(self, template, page, context_vars={}):
+    def render(self, template, page, context_vars=None):
+        if context_vars is None:
+            context_vars = {}
         with SettingsOverride(CMS_TEMPLATES=[(TEMPLATE_NAME, '')]):
             c = self.get_context(page, context_vars)
             t = Template(template)

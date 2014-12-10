@@ -65,8 +65,11 @@ class RequestFactory(object):
             return unquote(parsed[2] + ";" + parsed[3])
         return unquote(parsed[2])
 
-    def get(self, path, data={}, **extra):
+    def get(self, path, data=None, **extra):
         "Construct a GET request"
+
+        if data is None:
+            data = {}
 
         parsed = urlparse(path)
         r = {
@@ -79,9 +82,12 @@ class RequestFactory(object):
         r.update(extra)
         return self.request(**r)
 
-    def post(self, path, data={}, content_type=MULTIPART_CONTENT,
+    def post(self, path, data=None, content_type=MULTIPART_CONTENT,
              **extra):
         "Construct a POST request."
+
+        if data is None:
+            data = {}
 
         if content_type is MULTIPART_CONTENT:
             post_data = encode_multipart(BOUNDARY, data)
@@ -106,8 +112,11 @@ class RequestFactory(object):
         r.update(extra)
         return self.request(**r)
 
-    def head(self, path, data={}, **extra):
+    def head(self, path, data=None, **extra):
         "Construct a HEAD request."
+
+        if data is None:
+            data = {}
 
         parsed = urlparse(path)
         r = {
@@ -120,8 +129,11 @@ class RequestFactory(object):
         r.update(extra)
         return self.request(**r)
 
-    def options(self, path, data={}, **extra):
+    def options(self, path, data=None, **extra):
         "Constrict an OPTIONS request"
+
+        if data is None:
+            data = {}
 
         parsed = urlparse(path)
         r = {
@@ -133,9 +145,12 @@ class RequestFactory(object):
         r.update(extra)
         return self.request(**r)
 
-    def put(self, path, data={}, content_type=MULTIPART_CONTENT,
+    def put(self, path, data=None, content_type=MULTIPART_CONTENT,
             **extra):
         "Construct a PUT request."
+
+        if data is None:
+            data = {}
 
         if content_type is MULTIPART_CONTENT:
             post_data = encode_multipart(BOUNDARY, data)
@@ -160,8 +175,11 @@ class RequestFactory(object):
         r.update(extra)
         return self.request(**r)
 
-    def delete(self, path, data={}, **extra):
+    def delete(self, path, data=None, **extra):
         "Construct a DELETE request."
+
+        if data is None:
+            data = {}
 
         parsed = urlparse(path)
         r = {
